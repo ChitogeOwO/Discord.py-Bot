@@ -33,10 +33,9 @@ class userinfo(commands.Cog, name="Userinfo"):
         embed.add_field(name="Created at:", value=member.created_at.strftime("%a, %#d %B %Y, %I:%M %p UTC"),inline=False)
         embed.add_field(name="Joined at:", value=member.joined_at.strftime("%a, %#d %B %Y, %I:%M %p UTC"),inline=False)
 
-        embed.add_field(name=f"Roles ({len(roles)})", value="".join([role.mention for role in roles]), inline=False)
         embed.add_field(name="Top Role:", value=member.top_role.mention)
-
-
+        embed.add_field(name=f"Roles ({len(roles)})", value="".join([role.mention for role in roles]), inline=False)
+        
         await ctx.send(embed=embed)
 
 
