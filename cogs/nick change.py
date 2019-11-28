@@ -22,7 +22,7 @@ class nick(commands.Cog, name= "Change nick "):
                 else:
                     await after.edit(nick="smh")
 
-
+# test
 
 
 
