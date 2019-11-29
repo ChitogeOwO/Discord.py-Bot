@@ -10,20 +10,29 @@ class role(commands.Cog, name= "Roles Manage"):
     async def on_ready(self):
         print("cogs are loaded for roles")
 
-'''
+
     @commands.command()
-    async def role(self, ctx, user: discord.Member , role: discord.Role):
-        await user.add_roles(role)
-        await ctx.send(f"{user.mention}, {ctx.author.name} has gave you a role called {role.name}")
-        print(f"{role.name} role added to {user}")
+    @commands.has_permissions(manage_roles=True)
+    async def role(self, ctx, user: discord.Member , role: discord.Role=None):
+        if role not in user.roles:
+            await user.add_roles(role)
+            await ctx.send(f"{user.mention}, {ctx.author.name} has gave you a role called {role.name}")
+            print(f"{role.name} role added to {user}")
+        else:
+            await ctx.send("Member already has the role")
 
 
     @commands.command()
+    @commands.has_permissions(manage_roles=True)
     async def derole(self, ctx, user: discord.Member , role: discord.Role):
-        await user.remove_roles(role)
-        await ctx.send(f"{user.mention}, {ctx.author.name} has removed your role called {role.name}")
-        print(f"{role.name} role removed from {user}")
-'''
+        if role not in user.roles:
+            await user.remove_roles(role)
+            await ctx.send(f"{user.mention}, {ctx.author.name} has removed your role called {role.name}")
+            print(f"{role.name} role removed from {user}")
+        else:
+            await ctx.send("Member already has the role")
+
+
 
 def setup(client):
     client.add_cog(role(client))
