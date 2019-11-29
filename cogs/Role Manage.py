@@ -10,7 +10,7 @@ class role(commands.Cog, name= "Roles Manage"):
     async def on_ready(self):
         print("cogs are loaded for roles")
 
-
+'''
     @commands.command()
     async def role(self, ctx, user: discord.Member , role: discord.Role):
         await user.add_roles(role)
@@ -23,7 +23,7 @@ class role(commands.Cog, name= "Roles Manage"):
         await user.remove_roles(role)
         await ctx.send(f"{user.mention}, {ctx.author.name} has removed your role called {role.name}")
         print(f"{role.name} role removed from {user}")
-
+'''
 
 def setup(client):
     client.add_cog(role(client))
