@@ -34,9 +34,12 @@ class Sinfo(commands.Cog, name="serverinfo"):
 
         embed.add_field(name='Created', value=guild.created_at.strftime("%a, %#d %B %Y, %I:%M %p UTC"),inline=False)
         embed.add_field(name='region', value=guild.region,inline=False)
+        embed.add_field(name='server owner', value=guild.owner.name, inline=False)
+        embed.add_field(name='owner status', value=guild.owner.status, inline=False)
         embed.add_field(name='Categories', value=len(guild.categories))
         embed.add_field(name='Text Channels', value=len(guild.text_channels))
         embed.add_field(name='Voice Channels', value=len(guild.voice_channels))
+        embed.add_field(name='Emotes', value=len(guild.emojis) ,inline=False)
         
         embed.add_field(name='Roles', value=', '.join(roles) if len(roles) < 10 else f'{len(roles)} roles', inline=False)
         embed.set_footer(text=f"requested by {ctx.author}", icon_url=ctx.author.avatar_url)
