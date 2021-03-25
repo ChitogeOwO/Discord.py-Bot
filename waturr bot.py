@@ -20,8 +20,7 @@ async def on_ready():
 async def ping(ctx):
     await ctx.send(f'waturr! {round(client.latency * 1000)}ms')
 
-
-
+client.remove_command('help')
 
 # for welcome
 @client.event
