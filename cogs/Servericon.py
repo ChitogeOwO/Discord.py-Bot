@@ -13,6 +13,7 @@ class Sicon(commands.Cog, name="serverinfo"):
         print('cogs loaded for serverinfo')
 
 
+
     @commands.command(aliases=['guildicon'], usage='')
     @commands.guild_only()
     async def servericon(self, ctx, *, guild_id: int = None):
