@@ -1,39 +1,34 @@
 import discord
-import os
-import datetime
-import asyncio
-from discord.ext import commands, tasks
+from discord import app_commands
+from discord.ext import commands
 
-class userinfo(commands.Cog, name="Userinfo"):
-    def __init__(self, client):
-        self.client = client
+class UserInfo(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print('cogs loaded for userinfo')
+    @app_commands.command(name="userinfo", description="Show information about a user")
+    async def userinfo(self, interaction: discord.Interaction, user: discord.Member = None):
+        user = user or interaction.user  # default to the command user
 
-    @commands.command()
-    async def userinfo(self , ctx, member: discord.Member = None):
-        member = ctx.author if not member else member
-        roles = [role for role in member.roles]
+        embed = discord.Embed(
+            title=f"User Info - {user}",
+            color=discord.Color.green(),
+            timestamp=interaction.created_at
+        )
 
-        embed = discord.Embed(colour=member.color, timestamp=ctx.message.created_at)
+        embed.set_thumbnail(url=user.display_avatar.url)
 
-        embed.set_author(name=f"User Info - {member}")
-        embed.set_thumbnail(url=member.avatar_url)
-        embed.set_footer(text=f"requested by {ctx.author}", icon_url=ctx.author.avatar_url)
+        embed.add_field(name="👤 Username", value=f"{user.name}", inline=True)
+        embed.add_field(name="🆔 User ID", value=user.id, inline=True)
+        embed.add_field(name="📅 Account Created", value=user.created_at.strftime("%Y-%m-%d %H:%M:%S"), inline=False)
 
-        embed.add_field(name="ID:", value=member.id)
-        embed.add_field(name="Status:", value = member.status)
-        embed.add_field(name="User name:", value=member.display_name, inline=False)
+        if isinstance(user, discord.Member):  # Only if in guild
+            embed.add_field(name="📥 Joined Server", value=user.joined_at.strftime("%Y-%m-%d %H:%M:%S"), inline=False)
+            roles = [role.mention for role in user.roles if role.name != "@everyone"]
+            embed.add_field(name="🎭 Roles", value=", ".join(roles) if roles else "No roles", inline=False)
+            embed.add_field(name="💻 Top Role", value=user.top_role.mention, inline=True)
 
-        embed.add_field(name="Created at:", value=member.created_at.strftime("%a, %#d %B %Y, %I:%M %p UTC"),inline=False)
-        embed.add_field(name="Joined at:", value=member.joined_at.strftime("%a, %#d %B %Y, %I:%M %p UTC"),inline=False)
+        await interaction.response.send_message(embed=embed)
 
-        embed.add_field(name="Top Role:", value=member.top_role.mention, inline=False)
-        embed.add_field(name=f"Roles ({len(roles)})", value="".join(sorted([role.mention for role in roles])), inline=False)
-        
-        await ctx.send(embed=embed)
-
-def setup(client):
-    client.add_cog(userinfo(client))
+async def setup(bot):
+    await bot.add_cog(UserInfo(bot))

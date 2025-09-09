@@ -1,28 +1,19 @@
 import discord
+from discord import app_commands
 from discord.ext import commands
 
-class avatar(commands.Cog, name = "Avatar"):
+class Avatar(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
-    def __init__(self, client):
-        self.client = client
+    @app_commands.command(name="avatar", description="Show a user's profile picture")
+    async def avatar(self, interaction: discord.Interaction, user: discord.User = None):
+        user = user or interaction.user  # default to command user
+        embed = discord.Embed(title=f"{user.name}'s Avatar", color=discord.Color.blue())
+        embed.set_image(url=user.display_avatar.url)
+        await interaction.response.send_message(embed=embed)
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print('Cogs are loaded for avatar')
+async def setup(bot):
+    await bot.add_cog(Avatar(bot))
 
-    @commands.command()
-    async def avatar(self, ctx, member: discord.Member = None):
-        member = ctx.author if not member else member
-        Savatar = discord.Embed(color = discord.Color.default())
-        Savatar = embed = discord.Embed(colour=member.color)
-        Savatar = embed.set_author(name=f"Avatar - {member}")
-        Savatar = embed.set_footer(text=f"requested by {ctx.author}", icon_url=ctx.author.avatar_url)
-        Savatar.set_image(url='{}'.format(member.avatar_url))
-
-        await ctx.send(embed= Savatar)
-
-
-
-def setup(client):
-    client.add_cog(avatar(client))
 

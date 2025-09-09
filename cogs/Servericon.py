@@ -1,36 +1,25 @@
 import discord
-import os
-import datetime
-import asyncio
-from discord.ext import commands, tasks
+from discord import app_commands
+from discord.ext import commands
 
-class Sicon(commands.Cog, name="serverinfo"):
-    def __init__(self, client):
-        self.client = client
+class ServerIcon(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print('cogs loaded for serverinfo')
+    @app_commands.command(name="servericon", description="Show the server's icon")
+    async def servericon(self, interaction: discord.Interaction):
+        guild = interaction.guild
 
-
-
-    @commands.command(aliases=['guildicon'], usage='')
-    @commands.guild_only()
-    async def servericon(self, ctx, *, guild_id: int = None):
-        if guild_id is not None and await self.client.is_owner(ctx.author):
-            guild = self.client.get_guild(guild_id)
-            if guild is None:
-                return await ctx.send(f'Invalid Guild ID given.')
-        else:
-            guild = ctx.guild
-        embed = discord.Embed(color = discord.Color.dark_magenta())
-        embed.title = guild.name
         if guild.icon:
-            embed.set_image(url=guild.icon_url)
-            
+            embed = discord.Embed(
+                title=f"{guild.name}'s Icon",
+                color=discord.Color.blurple(),
+                timestamp=interaction.created_at
+            )
+            embed.set_image(url=guild.icon.url)
+            await interaction.response.send_message(embed=embed)
+        else:
+            await interaction.response.send_message("❌ This server has no icon.", ephemeral=True)
 
-        embed.set_footer(text=f"requested by {ctx.author}", icon_url=ctx.author.avatar_url)
-        await ctx.send(embed=embed)
-
-def setup(client):
-    client.add_cog(Sicon(client))
+async def setup(bot):
+    await bot.add_cog(ServerIcon(bot))

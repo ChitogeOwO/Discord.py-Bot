@@ -1,52 +1,31 @@
 import discord
-import os
-import datetime
-import asyncio
-from discord.ext import commands, tasks
+from discord import app_commands
+from discord.ext import commands
 
-class Sinfo(commands.Cog, name="serverinfo"):
-    def __init__(self, client):
-        self.client = client
+class ServerInfo(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print('cogs loaded for serverinfo')
+    @app_commands.command(name="serverinfo", description="Show information about the server")
+    async def serverinfo(self, interaction: discord.Interaction):
+        guild = interaction.guild
 
+        embed = discord.Embed(
+            title=f"Server Info - {guild.name}",
+            color=discord.Color.orange(),
+            timestamp=interaction.created_at
+        )
 
-    @commands.command(aliases=['guildinfo'], usage='')
-    @commands.guild_only()
-    async def serverinfo(self, ctx, *, guild_id: int = None):
-        if guild_id is not None and await self.client.is_owner(ctx.author):
-            guild = self.client.get_guild(guild_id)
-            if guild is None:
-                return await ctx.send(f'Invalid Guild ID given.')
-        else:
-            guild = ctx.guild
+        embed.set_thumbnail(url=guild.icon.url if guild.icon else discord.Embed.Empty)
 
-        roles = [role.name.replace('@', '@\u200b') for role in guild.roles]
+        embed.add_field(name="🆔 Server ID", value=guild.id, inline=True)
+        embed.add_field(name="👑 Owner", value=guild.owner.mention if guild.owner else "Unknown", inline=True)
+        embed.add_field(name="📅 Created On", value=guild.created_at.strftime("%Y-%m-%d %H:%M:%S"), inline=False)
+        embed.add_field(name="👥 Members", value=guild.member_count, inline=True)
+        embed.add_field(name="💬 Channels", value=len(guild.text_channels) + len(guild.voice_channels), inline=True)
+        embed.add_field(name="🎭 Roles", value=len(guild.roles), inline=True)
 
-        embed = discord.Embed(color = discord.Color.dark_magenta())
-        embed.title = guild.name
-        embed.add_field(name='ID', value=guild.id,inline=False)
-        embed.add_field(name='Owner', value=guild.owner,inline=False)
-        if guild.icon:
-            embed.set_thumbnail(url=guild.icon_url)
+        await interaction.response.send_message(embed=embed)
 
-        embed.add_field(name='Created', value=guild.created_at.strftime("%a, %#d %B %Y, %I:%M %p UTC"),inline=False)
-        embed.add_field(name='region', value=guild.region,inline=False)
-        embed.add_field(name='server owner', value=guild.owner.name, inline=False)
-        embed.add_field(name='owner status', value=guild.owner.status, inline=False)
-        embed.add_field(name='Categories', value=len(guild.categories))
-        embed.add_field(name='Text Channels', value=len(guild.text_channels))
-        embed.add_field(name='Voice Channels', value=len(guild.voice_channels))
-        embed.add_field(name='Emotes', value=len(guild.emojis) ,inline=False)
-        
-        embed.add_field(name='Roles', value=', '.join(roles) if len(roles) < 10 else f'{len(roles)} roles', inline=False)
-        embed.set_footer(text=f"requested by {ctx.author}", icon_url=ctx.author.avatar_url)
-        # e.set_footer(text='Created').timestamp = guild.created_at
-        await ctx.send(embed=embed)
-
-
-
-def setup(client):
-    client.add_cog(Sinfo(client))
+async def setup(bot):
+    await bot.add_cog(ServerInfo(bot))
