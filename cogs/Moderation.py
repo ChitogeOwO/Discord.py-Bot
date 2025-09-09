@@ -35,12 +35,6 @@ class Moderation(commands.Cog):
 
         await interaction.response.send_message("❌ User not found in banned list.")
 
-    # Clear messages
-    @app_commands.command(name="clear", description="Delete a number of messages (default 5)")
-    @app_commands.default_permissions(manage_messages=True)
-    async def clear(self, interaction: discord.Interaction, amount: int = 5):
-        await interaction.channel.purge(limit=amount)
-        await interaction.response.send_message(f"🧹 Cleared {amount} messages.", ephemeral=True)
 
 async def setup(bot):
     await bot.add_cog(Moderation(bot))
